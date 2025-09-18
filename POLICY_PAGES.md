@@ -41,7 +41,12 @@ All policy pages are accessible through:
 - **Framework**: React with Vite
 - **Styling**: Tailwind CSS
 - **Routing**: Client-side routing with state management
-- **Components**: Modular components in `src/components/PolicyPages.jsx`
+- **Components**: Individual component files in `src/components/`:
+  - `CancellationRefunds.jsx`
+  - `TermsConditions.jsx`
+  - `ShippingPolicy.jsx`
+  - `PrivacyPolicy.jsx`
+  - `ContactUs.jsx`
 - **Integration**: Seamlessly integrated with existing App.jsx structure
 
 ## Razorpay Compliance
@@ -61,6 +66,16 @@ When submitting to Razorpay, use these URLs:
 - https://guess-masters-in.vercel.app/shipping
 - https://guess-masters-in.vercel.app/privacy
 - https://guess-masters-in.vercel.app/contact-us
+
+## 📁 Files Created/Modified
+
+- **New**: `src/components/CancellationRefunds.jsx` - Cancellation & Refunds policy component
+- **New**: `src/components/TermsConditions.jsx` - Terms and Conditions component
+- **New**: `src/components/ShippingPolicy.jsx` - Shipping policy component
+- **New**: `src/components/PrivacyPolicy.jsx` - Privacy policy component
+- **New**: `src/components/ContactUs.jsx` - Contact Us page component
+- **Modified**: `src/App.jsx` - Added routing and navigation
+- **New**: `POLICY_PAGES.md` - Documentation for the policy pages
 
 ## Maintenance
 
