@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { CancellationRefunds, TermsConditions, ShippingPolicy, PrivacyPolicy, ContactUs } from './components/PolicyPages'
 
 function App() {
   const ALL_PAPERS = useMemo(
@@ -19,6 +20,7 @@ function App() {
   const [signedInEmail, setSignedInEmail] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [examsOpen, setExamsOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState('home')
 
   useEffect(() => {
     const saved = localStorage.getItem('gm_unlocked')
@@ -57,6 +59,12 @@ function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
+  const navigateToPage = (page) => {
+    setCurrentPage(page)
+    setMenuOpen(false)
+    setExamsOpen(false)
+  }
+
   const handleStartFree = () => {
     setShowToast('Your free paper is unlocked. Check My Papers.')
     scrollToSection('my-papers')
@@ -88,7 +96,24 @@ function App() {
     setShowToast('Signed out')
   }
 
-  return (
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case 'cancellation-refunds':
+        return <CancellationRefunds />
+      case 'terms-conditions':
+        return <TermsConditions />
+      case 'shipping':
+        return <ShippingPolicy />
+      case 'privacy':
+        return <PrivacyPolicy />
+      case 'contact-us':
+        return <ContactUs />
+      default:
+        return renderHomePage()
+    }
+  }
+
+  const renderHomePage = () => (
     <div className="text-slate-900 bg-white">
       {/* Navbar */}
       <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-slate-200">
@@ -409,8 +434,10 @@ function App() {
           <div>
             <div className="font-semibold mb-2">Legal</div>
             <div className="grid">
-              <button className="text-left py-1" onClick={()=>alert('Privacy Policy coming soon')}>Privacy Policy</button>
-              <button className="text-left py-1" onClick={()=>alert('Terms coming soon')}>Terms</button>
+              <button className="text-left py-1" onClick={() => navigateToPage('privacy')}>Privacy Policy</button>
+              <button className="text-left py-1" onClick={() => navigateToPage('terms-conditions')}>Terms & Conditions</button>
+              <button className="text-left py-1" onClick={() => navigateToPage('cancellation-refunds')}>Cancellation & Refunds</button>
+              <button className="text-left py-1" onClick={() => navigateToPage('shipping')}>Shipping Policy</button>
             </div>
           </div>
           <div>
@@ -425,6 +452,76 @@ function App() {
         <p className="text-center text-slate-600 mt-6">© {new Date().getFullYear()} GuessMasters | Powered by AI</p>
       </footer>
 
+      {showToast && (
+        <div className="fixed left-1/2 -translate-x-1/2 bottom-6 bg-slate-900 text-white px-4 py-2 rounded-full" role="status">
+          {showToast}
+        </div>
+      )}
+    </div>
+  )
+
+  return (
+    <div className="text-slate-900 bg-white">
+      {/* Navbar */}
+      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-slate-200">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigateToPage('home')}>
+            <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 text-white grid place-items-center font-bold">GM</span>
+            <div className="leading-tight">
+              <strong className="block">Guess Master</strong>
+              <span className="text-xs text-slate-600">Smarter Prep, Smarter Success</span>
+            </div>
+          </div>
+          <button className="md:hidden px-3 py-2 rounded-lg border" onClick={() => setMenuOpen(!menuOpen)}>Menu</button>
+          <nav className="hidden md:flex items-center gap-3">
+            <button className="px-2 py-2" onClick={() => navigateToPage('home')}>Home</button>
+            <div className="relative">
+              <button className="px-2 py-2 inline-flex items-center gap-1" onClick={() => setExamsOpen(!examsOpen)}>Exams <span>▾</span></button>
+              {examsOpen && (
+                <div className="absolute mt-2 bg-white border border-slate-200 rounded-lg shadow p-2 grid grid-cols-2 gap-1">
+                  {['SSC','Banking','UPSC','Railways','State Exams','Teaching'].map((e) => (
+                    <button key={e} className="px-3 py-2 rounded hover:bg-slate-50 text-left" onClick={() => { setExamsOpen(false); navigateToPage('home'); scrollToSection('popular-exams') }}>{e}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button className="px-2 py-2" onClick={() => { navigateToPage('home'); scrollToSection('guess-papers') }}>Guess Papers</button>
+            <button className="px-2 py-2" onClick={() => { navigateToPage('home'); scrollToSection('practice-tests') }}>Practice Tests</button>
+            <button className="px-2 py-2" onClick={() => { navigateToPage('home'); scrollToSection('features') }}>Features</button>
+            <button className="px-2 py-2" onClick={() => { navigateToPage('home'); scrollToSection('pricing') }}>Pricing</button>
+            <button className="px-2 py-2" onClick={() => { navigateToPage('home'); scrollToSection('about') }}>About</button>
+            <button className="px-2 py-2" onClick={() => navigateToPage('contact-us')}>Contact</button>
+            {signedInEmail ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-600">{signedInEmail}</span>
+                <button className="px-3 py-2 rounded-lg border" onClick={handleSignOut}>Sign out</button>
+              </div>
+            ) : (
+              <a href="#auth" onClick={(e)=>{e.preventDefault(); navigateToPage('home'); scrollToSection('auth')}} className="px-3 py-2 rounded-lg bg-blue-600 text-white font-semibold">Login / Register</a>
+            )}
+          </nav>
+        </div>
+        {menuOpen && (
+          <div className="md:hidden border-t border-slate-200 px-4 py-3 grid gap-2">
+            {['Home','Guess Papers','Practice Tests','Features','Pricing','About','Contact'].map((label) => (
+              <button key={label} className="text-left px-2 py-2 rounded hover:bg-slate-50" onClick={() => { setMenuOpen(false); navigateToPage('home'); scrollToSection(label.toLowerCase().replace(' ','-')) }}>{label}</button>
+            ))}
+            {signedInEmail ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-600">{signedInEmail}</span>
+                <button className="px-3 py-2 rounded-lg border" onClick={handleSignOut}>Sign out</button>
+              </div>
+            ) : (
+              <button className="px-3 py-2 rounded-lg bg-blue-600 text-white font-semibold" onClick={() => { setMenuOpen(false); navigateToPage('home'); scrollToSection('auth') }}>Login / Register</button>
+            )}
+          </div>
+        )}
+      </header>
+
+      {/* Main Content */}
+      {renderCurrentPage()}
+
+      {/* Toast */}
       {showToast && (
         <div className="fixed left-1/2 -translate-x-1/2 bottom-6 bg-slate-900 text-white px-4 py-2 rounded-full" role="status">
           {showToast}
